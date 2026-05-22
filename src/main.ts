@@ -2,16 +2,14 @@ import * as Blockly from 'blockly';
 import { defineBlocks } from './blocks';
 import { generator } from './generator';
 
-// define custom blocsks before setting up the workspace
+
 defineBlocks();
 
-// set up the Blockly workspace
 const workspace = Blockly.inject('blocklyDiv', {
   toolbox: {
     "kind": "flyoutToolbox",
     "contents": [
-      // TODO add your blocks to the toolbox here. 
-      // https://developers.google.com/blockly/guides/configure/web/toolboxes/toolbox
+   
       { "kind": "block", "type": "rbac_policy" },
       { "kind": "block", "type": "rbac_role" },
       { "kind": "block", "type": "rbac_rule" },
@@ -67,7 +65,7 @@ function updatePolicyOptions() {
 
 function runEvaluation() {
   try {
-    const code = generator.workspaceToCode(workspace);
+  const code = generator.workspaceToCode(workspace);
     const result = evaluatePolicyFromGeneratedCode(code);
     evalResult.textContent = `Result: ${result}`;
   } catch (e) {
