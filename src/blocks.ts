@@ -33,10 +33,10 @@ export function defineBlocks() {
         {
           "type": "field_dropdown",
           "name": "ROLE",
-          "options": [
-           ["TrustandSafetyLead", "TRUSTANDSAFETYLEAD"],
-           ["Moderator", "MODERATOR"],
-           ["User", "USER"]
+          options: [
+            ["TransitDirector", "TRANSITDIRECTOR"],
+            ["TrainOperator", "TRAINOPERATOR"],
+            ["Commuter", "COMMUTER"]
           ]
         }
       ],
@@ -61,9 +61,9 @@ export function defineBlocks() {
           "type": "field_dropdown",
           "name": "ACTION",
           "options": [
-            ["Ban", "BAN"],
-            ["Flag", "FLAG"],
-            ["Post", "POST"]
+            ["Reroute", "REROUTE"],
+            ["Drive", "DRIVE"],
+            ["Board", "BOARD"]
           ]
         },
         {
@@ -84,10 +84,10 @@ export function defineBlocks() {
         {
           "type": "field_dropdown",
           "name": "RES",
-          "options": [
-            ["UserAccounts", "USERACCOUNTS"],
-            ["ReportedContent", "REPORTEDCONTENT"],
-            ["PublicTimeline", "PUBLICTIMELINE"]
+          options: [
+           ["ControlCenter", "CONTROLCENTER"],
+           ["SubwayTrains", "SUBWAYTRAINS"],
+           ["TransitPasses", "TRANSITPASSES"]
           ]
         }
       ],
