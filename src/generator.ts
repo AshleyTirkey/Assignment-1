@@ -4,12 +4,12 @@ export const generator = javascriptGenerator;
 
 generator.forBlock['rbac_role'] = function (block) {
   const role = block.getFieldValue('ROLE');
-  return `"${role}",`;
+  return `"${role}"\n`;
 };
 
 generator.forBlock['rbac_resource'] = function (block) {
   const res = block.getFieldValue('RES');
-  return `"${res}",`;
+  return `"${res}"\n`;
 };
 
 generator.forBlock['rbac_rule'] = function (block) {
