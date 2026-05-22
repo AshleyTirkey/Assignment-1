@@ -56,10 +56,10 @@ describe('Step 1 – Block Definitions', () => {
     ws.dispose();
   });
 
-  it('rbac_role ROLE dropdown includes TRUSTANDSAFETYLEAD, MODERATOR, and USER', () => {
+  it('rbac_role ROLE dropdown includes TRANSITDIRECTOR, TRAINOPERATOR, and COMMUTER', () => {
     const ws = new Blockly.Workspace();
     const block = ws.newBlock('rbac_role');
-    for (const value of ['TRUSTANDSAFETYLEAD', 'MODERATOR', 'USER']) {
+    for (const value of ['TRANSITDIRECTOR', 'TRAINOPERATOR', 'COMMUTER']) {
       block.setFieldValue(value, 'ROLE');
       expect(
         block.getFieldValue('ROLE'),
@@ -83,10 +83,10 @@ describe('Step 1 – Block Definitions', () => {
     ws.dispose();
   });
 
-  it('rbac_resource RES dropdown includes USERACCOUNTS, REPORTEDCONTENT, and PUBLICTIMELINE', () => {
+  it('rbac_resource RES dropdown includes CONTROLCENTER, SUBWAYTRAINS, and TRANSITPASSES', () => {
     const ws = new Blockly.Workspace();
     const block = ws.newBlock('rbac_resource');
-    for (const value of ['USERACCOUNTS', 'REPORTEDCONTENT', 'PUBLICTIMELINE']) {
+    for (const value of ['CONTROLCENTER', 'SUBWAYTRAINS', 'TRANSITPASSES']) {
       block.setFieldValue(value, 'RES');
       expect(
         block.getFieldValue('RES'),
@@ -118,7 +118,7 @@ describe('Step 1 – Block Definitions', () => {
     ws.dispose();
   });
 
-  it('rbac_rule EFFECT accepts ALLOW and DENY; ACTION accepts Ban, Flag, Post', () => {
+  it('rbac_rule EFFECT accepts ALLOW and DENY; ACTION accepts REROUTE, DRIVE, BOARD', () => {
     const ws = new Blockly.Workspace();
     const block = ws.newBlock('rbac_rule');
     for (const value of ['ALLOW', 'DENY']) {
@@ -128,7 +128,7 @@ describe('Step 1 – Block Definitions', () => {
         `The EFFECT dropdown must include the option "${value}"`,
       ).toBe(value);
     }
-    for (const value of ['BAN', 'FLAG', 'POST']) {
+    for (const value of ['REROUTE', 'DRIVE', 'BOARD']) {
       block.setFieldValue(value, 'ACTION');
       expect(
         block.getFieldValue('ACTION'),
@@ -170,28 +170,28 @@ describe('Step 2 – Per-Block Code Generation', () => {
   it('rbac_role generates a quoted string for the selected role', () => {
     const ws = new Blockly.Workspace();
     const block = ws.newBlock('rbac_role');
-    block.setFieldValue('TRUSTANDSAFETYLEAD', 'ROLE');
+    block.setFieldValue('TRANSITDIRECTOR', 'ROLE');
     generator.init(ws);
     const code = generator.blockToCode(block);
     generator.finish('');
     expect(
       code,
-      'generator.forBlock["rbac_role"] must return the ROLE value as a quoted string, e.g. "TRUSTANDSAFETYLEAD"',
-    ).toMatch(new RegExp(`["']TRUSTANDSAFETYLEAD["']`));
+      'generator.forBlock["rbac_role"] must return the ROLE value as a quoted string, e.g. "TRANSITDIRECTOR"',
+    ).toMatch(new RegExp(`["']TRANSITDIRECTOR["']`));
     ws.dispose();
   });
 
   it('rbac_resource generates a quoted string for the selected resource', () => {
     const ws = new Blockly.Workspace();
     const block = ws.newBlock('rbac_resource');
-    block.setFieldValue('USERACCOUNTS', 'RES');
+    block.setFieldValue('CONTROLCENTER', 'RES');
     generator.init(ws);
     const code = generator.blockToCode(block);
     generator.finish('');
     expect(
       code,
-      'generator.forBlock["rbac_resource"] must return the RES value as a quoted string, e.g. "USERACCOUNTS"',
-    ).toMatch(new RegExp(`["']USERACCOUNTS["']`));
+      'generator.forBlock["rbac_resource"] must return the RES value as a quoted string, e.g. "CONTROLCENTER"',
+    ).toMatch(new RegExp(`["']CONTROLCENTER["']`));
     ws.dispose();
   });
 
@@ -199,14 +199,14 @@ describe('Step 2 – Per-Block Code Generation', () => {
     const ws = new Blockly.Workspace();
     const block = ws.newBlock('rbac_rule');
     block.setFieldValue('ALLOW', 'EFFECT');
-    block.setFieldValue('BAN', 'ACTION');
+    block.setFieldValue('REROUTE', 'ACTION');
     generator.init(ws);
     const code = generator.blockToCode(block) as string;
     generator.finish('');
     expect(
       code,
-      'generator.forBlock["rbac_rule"] must include the ACTION value ("BAN") in a conditional',
-    ).toMatch(new RegExp(`["']BAN["']`));
+      'generator.forBlock["rbac_rule"] must include the ACTION value ("REROUTE") in a conditional',
+    ).toMatch(new RegExp(`["']REROUTE["']`));
     expect(
       code,
       'generator.forBlock["rbac_rule"] must return "Allow" when EFFECT is ALLOW',
@@ -218,7 +218,7 @@ describe('Step 2 – Per-Block Code Generation', () => {
     const ws = new Blockly.Workspace();
     const block = ws.newBlock('rbac_rule');
     block.setFieldValue('DENY', 'EFFECT');
-    block.setFieldValue('FLAG', 'ACTION');
+    block.setFieldValue('DRIVE', 'ACTION');
     generator.init(ws);
     const code = generator.blockToCode(block) as string;
     generator.finish('');
@@ -264,27 +264,27 @@ describe('Step 3 – Full Policy Generation', () => {
     ws.dispose();
   });
 
-  it('generated code includes a role membership guard with TRUSTANDSAFETYLEAD', () => {
+  it('generated code includes a role membership guard with TRANSITDIRECTOR', () => {
     const ws = loadFixture('data-viewer.workspace.json');
     const code = generator.workspaceToCode(ws);
     expect(
       code,
-      'The allowedRoles list must contain "TRUSTANDSAFETYLEAD" as specified by the workspace fixture',
-    ).toMatch(new RegExp(`["']TRUSTANDSAFETYLEAD["']`));
+      'The allowedRoles list must contain "TRANSITDIRECTOR" as specified by the workspace fixture',
+    ).toMatch(new RegExp(`["']TRANSITDIRECTOR["']`));
     ws.dispose();
   });
 
-  it('generated code includes an action+resource conditional for BAN on USERACCOUNTS', () => {
+  it('generated code includes an action+resource conditional for REROUTE on CONTROLCENTER', () => {
     const ws = loadFixture('data-viewer.workspace.json');
     const code = generator.workspaceToCode(ws);
     expect(
       code,
-      'The generated code must check action === "BAN" — check your rbac_rule generator',
-    ).toMatch(new RegExp(`["']BAN["']`));
+      'The generated code must check action === "REROUTE" — check your rbac_rule generator',
+    ).toMatch(new RegExp(`["']REROUTE["']`));
     expect(
       code,
-      'The generated code must include "USERACCOUNTS" in the resource list — check your rbac_resource generator',
-    ).toMatch(new RegExp(`["']USERACCOUNTS["']`));
+      'The generated code must include "CONTROLCENTER" in the resource list — check your rbac_resource generator',
+    ).toMatch(new RegExp(`["']CONTROLCENTER["']`));
     ws.dispose();
   });
 
@@ -305,38 +305,38 @@ describe('Step 3 – Full Policy Generation', () => {
 describe('Step 4 – Policy Evaluation Correctness', () => {
   beforeAll(() => { defineBlocks(); });
 
-  it('SocialMediaModeration: TRUSTANDSAFETYLEAD BAN USERACCOUNTS → Allow', () => {
+  it('SocialMediaModeration: TRANSITDIRECTOR REROUTE CONTROLCENTER → Allow', () => {
     const ws = loadFixture('data-viewer.workspace.json');
     expect(
-      runPolicy(ws, 'SocialMediaModeration', 'TRUSTANDSAFETYLEAD', 'BAN', 'USERACCOUNTS'),
-      'TRUSTANDSAFETYLEAD performing BAN on USERACCOUNTS should be allowed — check that the fixture has TRUSTANDSAFETYLEAD in ROLES with an ALLOW BAN rule for USERACCOUNTS',
+      runPolicy(ws, 'SocialMediaModeration', 'TRANSITDIRECTOR', 'REROUTE', 'CONTROLCENTER'),
+      'TRANSITDIRECTOR performing REROUTE on CONTROLCENTER should be allowed — check that the fixture has TRANSITDIRECTOR in ROLES with an ALLOW REROUTE rule for CONTROLCENTER',
     ).toBe('Allow');
     ws.dispose();
   });
 
-  it('SocialMediaModeration: MODERATOR BAN USERACCOUNTS → Deny (role not listed)', () => {
+  it('SocialMediaModeration: TRAINOPERATOR REROUTE CONTROLCENTER → Deny (role not listed)', () => {
     const ws = loadFixture('data-viewer.workspace.json');
     expect(
-      runPolicy(ws, 'SocialMediaModeration', 'MODERATOR', 'BAN', 'USERACCOUNTS'),
-      'MODERATOR is not in the policy\'s ROLES list — the role guard must return "Deny" before checking rules',
+      runPolicy(ws, 'SocialMediaModeration', 'TRAINOPERATOR', 'REROUTE', 'CONTROLCENTER'),
+      'TRAINOPERATOR is not in the policy\'s ROLES list — the role guard must return "Deny" before checking rules',
     ).toBe('Deny');
     ws.dispose();
   });
 
-  it('SocialMediaModeration: TRUSTANDSAFETYLEAD FLAG USERACCOUNTS → Deny (action not covered)', () => {
+  it('SocialMediaModeration: TRANSITDIRECTOR DRIVE CONTROLCENTER → Deny (action not covered)', () => {
     const ws = loadFixture('data-viewer.workspace.json');
     expect(
-      runPolicy(ws, 'SocialMediaModeration', 'TRUSTANDSAFETYLEAD', 'FLAG', 'USERACCOUNTS'),
-      'FLAG is not covered by any rule in this policy — the function must fall through to the default Deny',
+      runPolicy(ws, 'SocialMediaModeration', 'TRANSITDIRECTOR', 'DRIVE', 'CONTROLCENTER'),
+      'DRIVE is not covered by any rule in this policy — the function must fall through to the default Deny',
     ).toBe('Deny');
     ws.dispose();
   });
 
-  it('SocialMediaModeration: TRUSTANDSAFETYLEAD BAN REPORTEDCONTENT → Deny (resource not covered)', () => {
+  it('SocialMediaModeration: TRANSITDIRECTOR REROUTE SUBWAYTRAINS → Deny (resource not covered)', () => {
     const ws = loadFixture('data-viewer.workspace.json');
     expect(
-      runPolicy(ws, 'SocialMediaModeration', 'TRUSTANDSAFETYLEAD', 'BAN', 'REPORTEDCONTENT'),
-      'REPORTEDCONTENT is not in the BAN rule\'s resource list — the conditional must not match and must fall through to Deny',
+      runPolicy(ws, 'SocialMediaModeration', 'TRANSITDIRECTOR', 'REROUTE', 'SUBWAYTRAINS'),
+      'SUBWAYTRAINS is not in the REROUTE rule\'s resource list — the conditional must not match and must fall through to Deny',
     ).toBe('Deny');
     ws.dispose();
   });
